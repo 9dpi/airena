@@ -19,8 +19,6 @@ const AI_REGISTRY = {
  * BACKEND GAME LOGIC
  */
 function startMatch(config) {
-  // We use Chess.js if available in GAS project (User should add the library)
-  // For now we mock the state initialization
   const matchId = "MATCH_" + Date.now();
   
   const initialState = {
@@ -49,26 +47,24 @@ function nextMove(matchId) {
 
   const state = JSON.parse(raw);
   
-  // In a real environment, you'd use: const game = new Chess(state.fen);
-  // Here we simulate the AI making a move if Chess.js isn't pre-installed as a library.
-  // We assume the user has added Chess.js as a library or we mock the FEN update.
-  
-  // MOCK LOGIC (In production, replace with real Chess.js calls)
+  // Initialize Chess engine
   let game;
   try {
-    game = new Chess.Chess(state.fen);
+    // Note: If you have chess.js as a .gs file in your project, use:
+    // const game = new Chess(state.fen); // Version 0.13.4 uses 'Chess' constructor
+    game = new Chess(state.fen);
   } catch(e) {
-    return { error: "Chess.js library not found in GAS. Please add it." };
+    return { error: "Chess.js logic not found in Apps Script. Please copy the chess.js code into a new .gs file." };
   }
 
-  const currentAI = game.turn() === "w" ? state.aiA : state.aiB;
   const moves = game.moves();
   
-  if (game.isGameOver() || moves.length === 0) {
+  if (game.game_over() || moves.length === 0) {
     const result = finishAndSave(matchId, state, game);
     return result;
   }
 
+  const currentAI = game.turn() === "w" ? state.aiA : state.aiB;
   const move = AI_REGISTRY[currentAI].decide(game.fen(), moves);
   game.move(move);
 
@@ -84,14 +80,15 @@ function nextMove(matchId) {
   return {
     matchId,
     fen: updatedState.fen,
-    gameOver: game.isGameOver(),
+    gameOver: game.game_over(),
     turn: updatedState.turn,
-    lastMove: move
+    lastMove: move,
+    moves: updatedState.movesCount
   };
 }
 
 function finishAndSave(matchId, state, game) {
-  const winner = game.isCheckmate() ? (game.turn() === 'w' ? state.aiB : state.aiA) : "Draw";
+  const winner = game.in_checkmate() ? (game.turn() === 'w' ? state.aiB : state.aiA) : "Draw";
   
   const finalResult = {
     matchId: matchId,

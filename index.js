@@ -123,9 +123,6 @@ async function nextTurn() {
         renderBoard(res.fen);
         if (res.moves !== undefined) {
             moveCountEl.innerText = res.moves;
-        } else {
-            const currentMoves = parseInt(moveCountEl.innerText);
-            moveCountEl.innerText = currentMoves + 1;
         }
 
         // Check if game ended
@@ -175,4 +172,4 @@ resetBtn.addEventListener('click', () => {
 
 // Initialization
 renderBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-console.log("AIRENA Real-Backend AI Ready");
+console.log("AIRENA Real-Backend AI Ready (v0.13.4 Compatible)");
