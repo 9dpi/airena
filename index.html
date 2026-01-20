@@ -10,35 +10,41 @@
         content="AIRENA - The ultimate platform where advanced AIs compete in Chess, Poker, and more. Experience the future of strategic computation.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="index.css">
     <link rel="icon"
-        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8500%22 /><text y=%22.9em%22 font-size=%2280%22 fill=%22black%22 x=%225%22>A</text></svg>">
 </head>
 
 <body>
     <div class="app-wrapper">
         <header>
-            <div class="logo">AIRENA</div>
+            <div class="logo">AIRENA // <small style="font-size: 0.6rem; letter-spacing: 1px;">PROTOCOL:
+                    ENDFIELD</small></div>
             <div class="status-item">
+                <span id="gas-status">EXT-LINK ACTIVE</span>
                 <span class="dot"></span>
-                <span id="gas-status">Cloud Engine Online</span>
             </div>
         </header>
 
         <section class="hero-section">
             <img src="assets/hero-battle.png" alt="AI vs AI Battle" class="hero-image">
             <div class="hero-overlay">
-                <h1 class="hero-title">AI vs AI Battle</h1>
-                <p class="hero-subtitle">Spectate the clash of algorithms in high-stakes environments.</p>
+                <span style="font-family: var(--font-mono); font-size: 0.7rem; color: var(--primary-accent);">[ SYSTEM
+                    STATUS: READY ]</span>
+                <h1 class="hero-title">Neural Clash</h1>
+                <p class="hero-subtitle">Industrial-grade strategic computation. Spectate the pure logic of autonomous
+                    actors in zero-sum environments.</p>
             </div>
         </section>
 
         <main class="setup-container">
             <!-- Side Selection: White -->
-            <div class="setup-card" id="side-white">
-                <span class="card-label">Strategic Actor A</span>
-                <h3 class="card-title">Side White</h3>
+            <div class="setup-card" id="side-white" id-index="1">
+                <span class="card-label">ACTOR_01 / ALPHA</span>
+                <h3 class="card-title">Initiator</h3>
                 <div class="select-wrapper">
                     <select id="ai-a-selector">
                         <option value="neural_node">Neural Node v4.2</option>
@@ -50,9 +56,9 @@
             </div>
 
             <!-- Game Selection: Poker -->
-            <div class="setup-card" id="game-config">
-                <span class="card-label">Environment</span>
-                <h3 class="card-title">Select Arena</h3>
+            <div class="setup-card" id="game-config" id-index="2">
+                <span class="card-label">SECTOR / GRID</span>
+                <h3 class="card-title">Arena Spec</h3>
                 <div class="select-wrapper">
                     <select id="game-selector">
                         <option value="poker">Poker (Texas Hold'em)</option>
@@ -63,9 +69,9 @@
             </div>
 
             <!-- Side Selection: Black -->
-            <div class="setup-card" id="side-black">
-                <span class="card-label">Strategic Actor B</span>
-                <h3 class="card-title">Side Black</h3>
+            <div class="setup-card" id="side-black" id-index="3">
+                <span class="card-label">ACTOR_02 / BETA</span>
+                <h3 class="card-title">Respondent</h3>
                 <div class="select-wrapper">
                     <select id="ai-b-selector">
                         <option value="neural_node">Neural Node v4.2</option>
@@ -78,13 +84,13 @@
         </main>
 
         <div class="action-area">
-            <button id="start-btn" class="btn-start">Start Match</button>
+            <button id="start-btn" class="btn-start">Execute Match</button>
         </div>
 
         <footer class="status-bar">
-            <span>&copy; 2026 AIRENA Protocol</span>
-            <span>Latency: <span id="latency">24ms</span></span>
-            <span>Uptime: 99.9%</span>
+            <div>&copy; 2026 AIRENA_SYS // V1.0.4-BETA</div>
+            <div>NET_LATENCY: <span id="latency">24MS</span></div>
+            <div>RUNTIME_STATE: <span style="color: white;">STABLE</span></div>
         </footer>
     </div>
 

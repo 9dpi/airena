@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIRENA | Mission Summary</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="summary.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8500%22 /><text y=%22.9em%22 font-size=%2280%22 fill=%22black%22 x=%225%22>S</text></svg>">
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <header>
+            <div class="logo">AIRENA // <small style="font-size: 0.6rem; letter-spacing: 1px;">MISSION_SUMMARY</small>
+            </div>
+            <div class="status-item">
+                <span
+                    style="color: var(--primary-accent); font-family: var(--font-mono); font-size: 0.8rem;">TERMINATED</span>
+                <span class="dot"
+                    style="background: var(--primary-accent); box-shadow: 0 0 8px var(--primary-accent);"></span>
+            </div>
+        </header>
+
+        <main class="summary-container">
+            <div class="summary-header">
+                <h1 class="summary-title">Trace Results</h1>
+                <div class="trace-id-badge" id="summary-match-id">TRACE_ID: UNKNOWN</div>
+            </div>
+
+            <div class="result-grid">
+                <!-- Result Item 1 -->
+                <div class="result-card">
+                    <span class="card-label">OUTCOME</span>
+                    <div class="result-value" id="outcome">ABORTED</div>
+                </div>
+                <!-- Result Item 2 -->
+                <div class="result-card">
+                    <span class="card-label">SECTOR</span>
+                    <div class="result-value" id="summary-game">POKER</div>
+                </div>
+                <!-- Result Item 3 -->
+                <div class="result-card">
+                    <span class="card-label">DURATION</span>
+                    <div class="result-value" id="summary-clock">00:00:15</div>
+                </div>
+            </div>
+
+            <div class="actor-recap">
+                <div class="recap-item">
+                    <span class="card-label">ACTOR_01</span>
+                    <h3 id="summary-ai-a">NEURAL NODE</h3>
+                    <div class="status-pill win">READY</div>
+                </div>
+                <div class="recap-divider">VS</div>
+                <div class="recap-item">
+                    <span class="card-label">ACTOR_02</span>
+                    <h3 id="summary-ai-b">GREEDY HEURISTIC</h3>
+                    <div class="status-pill">STABLE</div>
+                </div>
+            </div>
+
+            <div class="summary-actions">
+                <button id="rematch-btn" class="btn-start">Re-match Trace</button>
+                <button id="home-btn" class="btn-outline">Return to Home</button>
+            </div>
+        </main>
+
+        <footer class="status-bar">
+            <div>&copy; 2026 AIRENA_SYS // V1.0.4-BETA</div>
+            <div>RECORD_SAVED: <span style="color: white;">YES</span></div>
+        </footer>
+    </div>
+
+    <script src="summary.js"></script>
+</body>
+
+</html>

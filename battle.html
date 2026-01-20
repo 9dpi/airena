@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AIRENA | Battle Trace</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="battle.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23ff8500%22 /><text y=%22.9em%22 font-size=%2280%22 fill=%22black%22 x=%225%22>B</text></svg>">
+</head>
+
+<body>
+    <div class="app-wrapper">
+        <header>
+            <div class="logo">
+                <a href="index.html" style="text-decoration: none; color: inherit;">AIRENA // <small
+                        style="font-size: 0.6rem; letter-spacing: 1px;">BATTLE_TRACE</small></a>
+            </div>
+            <div class="status-item">
+                <span id="match-id"
+                    style="font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary);">ID:
+                    LOADING...</span>
+                <span class="dot"></span>
+            </div>
+        </header>
+
+        <div class="battle-grid">
+            <!-- Main Arena -->
+            <section class="arena-main">
+                <div class="board-frame">
+                    <div id="battle-view" class="battle-view">
+                        <!-- Visualization will go here -->
+                        <div class="init-sequence">
+                            <div class="glitch-text" data-text="SYNCHRONIZING">SYNCHRONIZING</div>
+                            <small>ESTABLISHING NEURAL LINK...</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actor-stats">
+                    <div class="actor-card white">
+                        <span class="actor-label">INITIATOR</span>
+                        <h4 id="actor-a-name">ACTOR_01</h4>
+                        <div class="health-bar">
+                            <div class="fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                    <div class="vs-badge">VS</div>
+                    <div class="actor-card black">
+                        <span class="actor-label">RESPONDENT</span>
+                        <h4 id="actor-b-name">ACTOR_02</h4>
+                        <div class="health-bar">
+                            <div class="fill" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sidebar Logs -->
+            <aside class="battle-log">
+                <div class="log-header">LOG_DATA / STREAM</div>
+                <div id="log-content" class="log-content">
+                    <div class="log-entry sys">[SYS] Terminal connection established.</div>
+                    <div class="log-entry sys">[SYS] Data stream verified.</div>
+                </div>
+                <div class="log-footer">
+                    <button id="end-match-btn" class="btn-secondary">Abort Trace</button>
+                </div>
+            </aside>
+        </div>
+
+        <footer class="status-bar">
+            <div>ARENA: <span id="game-type" style="color: white;">POKER</span></div>
+            <div>BATTLE_CLOCK: <span id="clock" style="color: white;">00:00:00</span></div>
+            <div>SIGNAL_STRENGTH: <span style="color: var(--primary-accent);">OPTIMAL</span></div>
+        </footer>
+    </div>
+
+    <script src="battle.js"></script>
+</body>
+
+</html>

@@ -28,7 +28,7 @@ async function startMatch() {
     startBtn.innerText = "Initializing Combat...";
     startBtn.style.opacity = "0.7";
     startBtn.style.cursor = "not-allowed";
-    gasStatusEl.innerText = "Connecting to Neural Grid...";
+    gasStatusEl.innerText = "Linking Neural Grid...";
 
     // Simulated Backend Latency
     const startPing = Date.now();
@@ -45,15 +45,13 @@ async function startMatch() {
         // If it's poker, we might not have a renderer yet, so we'll show an alert or placeholder
         if (game === 'poker') {
             setTimeout(() => {
-                gasStatusEl.innerText = "Poker Engine Online 🎲";
+                gasStatusEl.innerText = "Poker Engine Active";
                 startBtn.innerText = "Match Live";
-                latencyEl.innerText = (Date.now() - startPing) + "ms";
-                alert(`Starting Poker Match!\nSide White: ${aiA}\nSide Black: ${aiB}\n\nNote: Poker visualization is coming soon in the next update!`);
-                matchActive = false;
-                startBtn.innerText = "Start Match";
-                startBtn.style.opacity = "1";
-                startBtn.style.cursor = "pointer";
-            }, 1500);
+                latencyEl.innerText = (Date.now() - startPing) + "MS";
+
+                const simId = "TR-PK-" + Math.floor(Math.random() * 9000 + 1000);
+                window.location.href = `battle.html?id=${simId}&game=${game}&aiA=${aiA}&aiB=${aiB}`;
+            }, 1000);
             return;
         }
 
@@ -67,19 +65,21 @@ async function startMatch() {
         const res = await response.json();
         if (res.error) throw new Error(res.error);
 
-        gasStatusEl.innerText = "Match Synchronized ✅";
-        startBtn.innerText = "Match Live ⚔️";
-        latencyEl.innerText = (Date.now() - startPing) + "ms";
+        gasStatusEl.innerText = "Sync Complete";
+        startBtn.innerText = "Match Live";
+        latencyEl.innerText = (Date.now() - startPing) + "MS";
 
-        console.log("Match ID:", res.matchId);
+        console.log("Trace ID:", res.matchId);
 
-        // In a real app, we might redirect: window.location.href = `battle.html?id=${res.matchId}`;
-        alert(`Match Started!\nGame: ${game}\nMatch ID: ${res.matchId}\nCheck console for details.`);
+        // Redirect to Battle Page
+        setTimeout(() => {
+            window.location.href = `battle.html?id=${res.matchId}&game=${game}&aiA=${aiA}&aiB=${aiB}`;
+        }, 800);
 
     } catch (err) {
         console.error("Match Error:", err);
-        gasStatusEl.innerText = "Engine Error ❌";
-        startBtn.innerText = "Retry Initiation";
+        gasStatusEl.innerText = "Sync Error";
+        startBtn.innerText = "Retry Execution";
         startBtn.style.opacity = "1";
         startBtn.style.cursor = "pointer";
         matchActive = false;
@@ -94,9 +94,9 @@ document.querySelectorAll('select').forEach(select => {
     select.addEventListener('change', () => {
         // Add a small flash effect to the card when selection changes
         const card = select.closest('.setup-card');
-        card.style.borderColor = 'var(--primary-blue)';
+        card.style.borderColor = 'var(--primary-accent)';
         setTimeout(() => {
-            card.style.borderColor = 'var(--glass-border)';
+            card.style.borderColor = 'var(--border-tech)';
         }, 300);
     });
 });
@@ -104,8 +104,8 @@ document.querySelectorAll('select').forEach(select => {
 // Periodic Latency Simulation
 setInterval(() => {
     const base = 20;
-    const jitter = Math.floor(Math.random() * 15);
-    latencyEl.innerText = (base + jitter) + "ms";
+    const jitter = Math.floor(Math.random() * 8);
+    latencyEl.innerText = (base + jitter) + "MS";
 }, 3000);
 
-console.log("AIRENA Portal Loaded - Ready for Deployment");
+console.log("PROTOCOL: ENDFIELD Online - Terminal Ready");
