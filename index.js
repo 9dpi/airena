@@ -162,14 +162,20 @@ function addToHistory(match) {
 startBtn.addEventListener('click', startBattle);
 
 resetBtn.addEventListener('click', () => {
+    game = new Chess();
+    renderBoard(game.fen());
+    moveCount = 0;
+    moveCountEl.innerText = "0";
     matchActive = false;
     currentMatchId = null;
     startBtn.innerText = "Initiate Battle";
     gasStatusEl.innerText = "Ready 🟢";
-    renderBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-    moveCountEl.innerText = "0";
 });
 
-// Initialization
-renderBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-console.log("AIRENA Real-Backend AI Ready (v0.13.4 Compatible)");
+simulateMoveBtn.addEventListener('click', () => {
+    if (game.game_over()) return;
+    const moves = game.moves();
+    game.move(moves[Math.floor(Math.random() * moves.length)]);
+    renderBoard(game.fen());
+    updateStatus();
+});
