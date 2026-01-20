@@ -1,5 +1,6 @@
 // Configuration
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtZhI8T_CKc78vSRo8VytvDZ3DFnebYJQnuLT1MtsG3XFKpFLq18sNpaU2vibDwVnX/exec";
+const SECRET_KEY = "AI_ARENA_2026";
 
 // Unicode Pieces Mapping
 const PIECES = {
@@ -7,8 +8,7 @@ const PIECES = {
     P: "♙", R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔"
 };
 
-let game = new Chess.Chess();
-let moveCount = 0;
+let currentMatchId = null;
 let matchActive = false;
 
 // DOM Elements
@@ -16,11 +16,11 @@ const moveCountEl = document.getElementById('move-count');
 const evalScoreEl = document.getElementById('eval-score');
 const startBtn = document.getElementById('start-btn');
 const resetBtn = document.getElementById('reset-btn');
-const simulateMoveBtn = document.getElementById('simulate-move-btn');
 const historyList = document.getElementById('match-history');
 const gameSelector = document.getElementById('game-selector');
 const aiASelector = document.getElementById('ai-a-selector');
 const aiBSelector = document.getElementById('ai-b-selector');
+const gasStatusEl = document.getElementById('gas-status');
 
 /**
  * 🎨 CUSTOM RENDER ENGINE
@@ -28,6 +28,7 @@ const aiBSelector = document.getElementById('ai-b-selector');
 function renderBoard(fen) {
     const boardEl = document.getElementById("board");
     boardEl.innerHTML = "";
+    if (!fen) return;
 
     const rows = fen.split(" ")[0].split("/");
 
@@ -51,60 +52,24 @@ function renderBoard(fen) {
 
 function createSquare(x, y, piece) {
     const div = document.createElement("div");
-    // Standard chess coordinates: (x+y)%2 gives the right pattern
     div.className = "square " + ((x + y) % 2 === 0 ? "white" : "black");
     div.textContent = piece;
     return div;
 }
 
-function updateStatus() {
-    moveCount++;
-    moveCountEl.innerText = moveCount;
-    // Mock evaluation score
-    const score = (Math.random() * 2 - 1).toFixed(1);
-    evalScoreEl.innerText = (score >= 0 ? '+' : '') + score;
-    evalScoreEl.style.color = score >= 0 ? 'var(--primary)' : 'var(--accent)';
-}
-
+/**
+ * 📡 REAL BACKEND AI COMMUNICATION (TURN-BASED)
+ */
 async function startBattle() {
     if (matchActive) return;
 
-    const selectedArena = gameSelector.value;
-
-    // Chess Specific Flow
-    if (selectedArena === 'chess') {
-        matchActive = true;
-        startBtn.innerText = "Battle in Progress...";
-
-        const battleInterval = setInterval(() => {
-            if (game.isGameOver() || !matchActive) {
-                clearInterval(battleInterval);
-                if (game.isGameOver()) {
-                    const winner = game.isCheckmate() ? (game.turn() === 'w' ? 'Black' : 'White') : 'Draw';
-                    finishBattle(winner);
-                }
-                return;
-            }
-
-            const moves = game.moves();
-            const move = moves[Math.floor(Math.random() * moves.length)];
-            game.move(move);
-            renderBoard(game.fen());
-            updateStatus();
-        }, 500);
-    } else {
-        // Other games go through Backend for simulation
-        simulateRemoteBattle();
-    }
-}
-
-async function simulateRemoteBattle() {
     matchActive = true;
-    startBtn.innerText = "Simulating...";
-    document.getElementById('gas-status').innerText = "AI thinking... 🧠";
+    startBtn.innerText = "Initializing Backend...";
+    gasStatusEl.innerText = "Creating match... 🚀";
 
     const payload = {
-        secret: "AI_ARENA_2026",
+        action: "start",
+        secret: SECRET_KEY,
         game: gameSelector.value,
         aiA: aiASelector.value,
         aiB: aiBSelector.value
@@ -119,46 +84,67 @@ async function simulateRemoteBattle() {
 
         if (res.error) throw new Error(res.error);
 
-        addToHistory(res);
-        alert(`Battle Finished! Winner: ${res.winner}`);
-        document.getElementById('gas-status').innerText = "Match Synced! ✅";
+        currentMatchId = res.matchId;
+        renderBoard(res.fen);
+        moveCountEl.innerText = "0";
+        startBtn.innerText = "Battle Live ⚔️";
+
+        // Start the turn loop
+        nextTurn();
+
     } catch (err) {
-        console.error("Battle Error:", err);
-        document.getElementById('gas-status').innerText = "Sync Failed ❌";
-    } finally {
+        console.error("Initiation Error:", err);
+        gasStatusEl.innerText = "Init Failed ❌";
         matchActive = false;
         startBtn.innerText = "Initiate Battle";
+        alert("Backend Error: " + err.message);
     }
 }
 
-async function finishBattle(winner) {
-    matchActive = false;
-    startBtn.innerText = "Initiate Battle";
+async function nextTurn() {
+    if (!matchActive || !currentMatchId) return;
 
-    const resultData = {
-        secret: "AI_ARENA_2026",
-        matchId: "AIRENA_" + Date.now(),
-        game: "chess",
-        aiA: aiASelector.value,
-        aiB: aiBSelector.value,
-        winner: winner,
-        result: winner === 'Draw' ? 'draw' : 'win',
-        moves: moveCount,
-        durationMs: 5000,
-        replayLink: ""
-    };
-
-    addToHistory(resultData);
+    gasStatusEl.innerText = "AI Thinking... 🧠";
 
     try {
-        fetch(GAS_WEB_APP_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: JSON.stringify(resultData)
+        const response = await fetch(GAS_WEB_APP_URL, {
+            method: "POST",
+            body: JSON.stringify({
+                action: "move",
+                secret: SECRET_KEY,
+                matchId: currentMatchId
+            })
         });
-        document.getElementById('gas-status').innerText = "Match Synced! ✅";
-    } catch (e) {
-        console.error("GAS Sync error:", e);
+        const res = await response.json();
+
+        if (res.error) throw new Error(res.error);
+
+        // Update UI
+        renderBoard(res.fen);
+        if (res.moves !== undefined) {
+            moveCountEl.innerText = res.moves;
+        } else {
+            const currentMoves = parseInt(moveCountEl.innerText);
+            moveCountEl.innerText = currentMoves + 1;
+        }
+
+        // Check if game ended
+        if (res.gameOver) {
+            matchActive = false;
+            startBtn.innerText = "Initiate Battle";
+            gasStatusEl.innerText = "Match Finished ✅";
+            addToHistory(res);
+            alert(`Match Over!\nWinner: ${res.winner}\nResult: ${res.result}`);
+        } else {
+            // Wait a bit then ask for next move (Polling)
+            setTimeout(nextTurn, 800);
+        }
+
+    } catch (err) {
+        console.error("Turn Error:", err);
+        gasStatusEl.innerText = "Sync Lost ❌";
+        matchActive = false;
+        startBtn.innerText = "Initiate Battle";
     }
 }
 
@@ -170,7 +156,7 @@ function addToHistory(match) {
             <span>${match.aiA} vs ${match.aiB}</span>
             <span class="status-badge badge-win">${match.winner}</span>
         </div>
-        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">${match.game.toUpperCase()} • ${match.moves} moves</div>
+        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">${match.game.toUpperCase()} • ${match.moves} moves • Final</div>
     `;
     historyList.prepend(item);
 }
@@ -179,22 +165,14 @@ function addToHistory(match) {
 startBtn.addEventListener('click', startBattle);
 
 resetBtn.addEventListener('click', () => {
-    game = new Chess.Chess();
-    renderBoard(game.fen());
-    moveCount = 0;
-    moveCountEl.innerText = "0";
     matchActive = false;
+    currentMatchId = null;
     startBtn.innerText = "Initiate Battle";
-});
-
-simulateMoveBtn.addEventListener('click', () => {
-    if (game.isGameOver()) return;
-    const moves = game.moves();
-    game.move(moves[Math.floor(Math.random() * moves.length)]);
-    renderBoard(game.fen());
-    updateStatus();
+    gasStatusEl.innerText = "Ready 🟢";
+    renderBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+    moveCountEl.innerText = "0";
 });
 
 // Initialization
-renderBoard(game.fen());
-console.log("AIRENA Custom UI Engine Ready");
+renderBoard("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+console.log("AIRENA Real-Backend AI Ready");
