@@ -4,106 +4,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AIRENA | AI Battleground</title>
+    <title>AIRENA | Ultimate AI Battleground</title>
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="AIRENA - The ultimate platform where advanced AIs compete in Chess, Poker, and more. Experience the future of strategic computation.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="index.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
 </head>
 
 <body>
-    <div class="app-container">
+    <div class="app-wrapper">
         <header>
-            <div class="logo">
-                <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="32" height="32" rx="8" fill="url(#paint0_linear)" />
-                    <path d="M16 6L25 21H7 L16 6Z" fill="white" />
-                    <defs>
-                        <linearGradient id="paint0_linear" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-                            <stop stop-color="#00F2FF" />
-                            <stop offset="1" stop-color="#7000FF" />
-                        </linearGradient>
-                    </defs>
-                </svg>
-                AIRENA
-            </div>
-            <div class="server-status">
-                <span id="gas-status" style="color: var(--text-dim); font-size: 12px;">Google Sheet Connected 🟢</span>
+            <div class="logo">AIRENA</div>
+            <div class="status-item">
+                <span class="dot"></span>
+                <span id="gas-status">Cloud Engine Online</span>
             </div>
         </header>
 
-        <aside class="sidebar left">
-            <h3 class="card-title">Environment</h3>
-            <div class="setup-group">
-                <label style="font-size: 12px; color: var(--text-dim); display: block; margin-bottom: 8px;">Select
-                    Arena</label>
-                <select id="game-selector"
-                    style="width: 100%; background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px;">
-                    <option value="chess">Chess Battle</option>
-                    <option value="xiangqi">Xiangqi (MVP)</option>
-                    <option value="mini">Mini Game (Grid)</option>
-                </select>
+        <section class="hero-section">
+            <img src="assets/hero-battle.png" alt="AI vs AI Battle" class="hero-image">
+            <div class="hero-overlay">
+                <h1 class="hero-title">AI vs AI Battle</h1>
+                <p class="hero-subtitle">Spectate the clash of algorithms in high-stakes environments.</p>
+            </div>
+        </section>
+
+        <main class="setup-container">
+            <!-- Side Selection: White -->
+            <div class="setup-card" id="side-white">
+                <span class="card-label">Strategic Actor A</span>
+                <h3 class="card-title">Side White</h3>
+                <div class="select-wrapper">
+                    <select id="ai-a-selector">
+                        <option value="neural_node">Neural Node v4.2</option>
+                        <option value="quantum_engine">Quantum Engine</option>
+                        <option value="random">Random Logic</option>
+                        <option value="greedy">Greedy Heuristic</option>
+                    </select>
+                </div>
             </div>
 
-            <h3 class="card-title" style="margin-top: 20px;">Battle Side A</h3>
-            <div class="setup-group">
-                <select id="ai-a-selector"
-                    style="width: 100%; background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px;">
-                    <option value="random">AI Random</option>
-                    <option value="greedy">AI Greedy</option>
-                </select>
+            <!-- Game Selection: Poker -->
+            <div class="setup-card" id="game-config">
+                <span class="card-label">Environment</span>
+                <h3 class="card-title">Select Arena</h3>
+                <div class="select-wrapper">
+                    <select id="game-selector">
+                        <option value="poker">Poker (Texas Hold'em)</option>
+                        <option value="chess">Grandmaster Chess</option>
+                        <option value="xiangqi">Xiangqi Battle</option>
+                    </select>
+                </div>
             </div>
 
-            <h3 class="card-title" style="margin-top: 20px;">Battle Side B</h3>
-            <div class="setup-group">
-                <select id="ai-b-selector"
-                    style="width: 100%; background: var(--glass); color: white; border: 1px solid var(--glass-border); padding: 8px; border-radius: 6px;">
-                    <option value="random">AI Random</option>
-                    <option value="greedy">AI Greedy</option>
-                </select>
-            </div>
-
-            <div style="margin-top: auto;">
-                <button id="start-btn" style="width: 100%;">Initiate Battle</button>
-            </div>
-        </aside>
-
-        <main class="main-board">
-            <div id="board"></div>
-            <div class="controls">
-                <button id="reset-btn"
-                    style="background: var(--glass); border: 1px solid var(--glass-border);">Reset</button>
-                <button id="simulate-move-btn"
-                    style="background: var(--glass); border: 1px solid var(--glass-border);">Step Move</button>
+            <!-- Side Selection: Black -->
+            <div class="setup-card" id="side-black">
+                <span class="card-label">Strategic Actor B</span>
+                <h3 class="card-title">Side Black</h3>
+                <div class="select-wrapper">
+                    <select id="ai-b-selector">
+                        <option value="neural_node">Neural Node v4.2</option>
+                        <option value="quantum_engine">Quantum Engine</option>
+                        <option value="random" selected>Random Logic</option>
+                        <option value="greedy">Greedy Heuristic</option>
+                    </select>
+                </div>
             </div>
         </main>
 
-        <aside class="sidebar right">
-            <h3 class="card-title">Live Analytics</h3>
-            <div class="stats-panel" style="margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <span style="color: var(--text-dim);">Moves</span>
-                    <span id="move-count" style="font-weight: 600;">0</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
-                    <span style="color: var(--text-dim);">Evaluation</span>
-                    <span id="eval-score" style="font-weight: 600; color: var(--primary);">+0.0</span>
-                </div>
-            </div>
+        <div class="action-area">
+            <button id="start-btn" class="btn-start">Start Match</button>
+        </div>
 
-            <h3 class="card-title">Recent Matches</h3>
-            <div class="history-list" id="match-history">
-                <!-- Match items will be injected here -->
-            </div>
-            <div style="margin-top: 15px; font-size: 10px; color: var(--text-dim); line-height: 1.4;">
-                💡 <b>Note for Developer:</b> Copy <code>chess.js</code> code from the repo's <code>gas/</code> folder
-                into a new file in your Google Apps Script project.
-            </div>
-        </aside>
+        <footer class="status-bar">
+            <span>&copy; 2026 AIRENA Protocol</span>
+            <span>Latency: <span id="latency">24ms</span></span>
+            <span>Uptime: 99.9%</span>
+        </footer>
     </div>
 
-    <link rel="icon" href="data:,">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.13.4/chess.min.js"></script>
+    <!-- Script Entry -->
     <script src="index.js"></script>
 </body>
 

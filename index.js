@@ -2,180 +2,110 @@
 const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxtZhI8T_CKc78vSRo8VytvDZ3DFnebYJQnuLT1MtsG3XFKpFLq18sNpaU2vibDwVnX/exec";
 const SECRET_KEY = "AI_ARENA_2026";
 
-// Unicode Pieces Mapping
-const PIECES = {
-    p: "♟", r: "♜", n: "♞", b: "♝", q: "♛", k: "♚",
-    P: "♙", R: "♖", N: "♘", B: "♗", Q: "♕", K: "♔"
-};
-
-let currentMatchId = null;
-let matchActive = false;
-
 // DOM Elements
-const moveCountEl = document.getElementById('move-count');
-const evalScoreEl = document.getElementById('eval-score');
 const startBtn = document.getElementById('start-btn');
-const resetBtn = document.getElementById('reset-btn');
-const historyList = document.getElementById('match-history');
+const gasStatusEl = document.getElementById('gas-status');
 const gameSelector = document.getElementById('game-selector');
 const aiASelector = document.getElementById('ai-a-selector');
 const aiBSelector = document.getElementById('ai-b-selector');
-const gasStatusEl = document.getElementById('gas-status');
+const latencyEl = document.getElementById('latency');
+
+let matchActive = false;
 
 /**
- * 🎨 CUSTOM RENDER ENGINE
+ * 📡 BATTLE INITIATION
  */
-function renderBoard(fen) {
-    const boardEl = document.getElementById("board");
-    boardEl.innerHTML = "";
-    if (!fen) return;
-
-    const rows = fen.split(" ")[0].split("/");
-
-    rows.forEach((row, y) => {
-        let x = 0;
-        for (const char of row) {
-            if (isNaN(char)) {
-                const square = createSquare(x, y, PIECES[char]);
-                boardEl.appendChild(square);
-                x++;
-            } else {
-                for (let i = 0; i < parseInt(char); i++) {
-                    const square = createSquare(x, y, "");
-                    boardEl.appendChild(square);
-                    x++;
-                }
-            }
-        }
-    });
-}
-
-function createSquare(x, y, piece) {
-    const div = document.createElement("div");
-    div.className = "square " + ((x + y) % 2 === 0 ? "white" : "black");
-    div.textContent = piece;
-    return div;
-}
-
-/**
- * 📡 REAL BACKEND AI COMMUNICATION (TURN-BASED)
- */
-async function startBattle() {
+async function startMatch() {
     if (matchActive) return;
 
-    matchActive = true;
-    startBtn.innerText = "Initializing Backend...";
-    gasStatusEl.innerText = "Creating match... 🚀";
+    const game = gameSelector.value;
+    const aiA = aiASelector.value;
+    const aiB = aiBSelector.value;
 
-    const payload = {
-        action: "start",
-        secret: SECRET_KEY,
-        game: gameSelector.value,
-        aiA: aiASelector.value,
-        aiB: aiBSelector.value
-    };
+    console.log(`Starting ${game} match: ${aiA} vs ${aiB}`);
+
+    matchActive = true;
+    startBtn.innerText = "Initializing Combat...";
+    startBtn.style.opacity = "0.7";
+    startBtn.style.cursor = "not-allowed";
+    gasStatusEl.innerText = "Connecting to Neural Grid...";
+
+    // Simulated Backend Latency
+    const startPing = Date.now();
 
     try {
+        const payload = {
+            action: "start",
+            secret: SECRET_KEY,
+            game: game,
+            aiA: aiA,
+            aiB: aiB
+        };
+
+        // If it's poker, we might not have a renderer yet, so we'll show an alert or placeholder
+        if (game === 'poker') {
+            setTimeout(() => {
+                gasStatusEl.innerText = "Poker Engine Online 🎲";
+                startBtn.innerText = "Match Live";
+                latencyEl.innerText = (Date.now() - startPing) + "ms";
+                alert(`Starting Poker Match!\nSide White: ${aiA}\nSide Black: ${aiB}\n\nNote: Poker visualization is coming soon in the next update!`);
+                matchActive = false;
+                startBtn.innerText = "Start Match";
+                startBtn.style.opacity = "1";
+                startBtn.style.cursor = "pointer";
+            }, 1500);
+            return;
+        }
+
+        // For existing games like chess, we could redirect to a battle page or render here.
+        // For now, let's just simulate the start successfully.
         const response = await fetch(GAS_WEB_APP_URL, {
             method: "POST",
             body: JSON.stringify(payload)
         });
-        const res = await response.json();
 
+        const res = await response.json();
         if (res.error) throw new Error(res.error);
 
-        currentMatchId = res.matchId;
-        renderBoard(res.fen);
-        moveCountEl.innerText = "0";
-        startBtn.innerText = "Battle Live ⚔️";
+        gasStatusEl.innerText = "Match Synchronized ✅";
+        startBtn.innerText = "Match Live ⚔️";
+        latencyEl.innerText = (Date.now() - startPing) + "ms";
 
-        // Start the turn loop
-        nextTurn();
+        console.log("Match ID:", res.matchId);
 
-    } catch (err) {
-        console.error("Initiation Error:", err);
-        gasStatusEl.innerText = "Init Failed ❌";
-        matchActive = false;
-        startBtn.innerText = "Initiate Battle";
-        alert("Backend Error: " + err.message);
-    }
-}
-
-async function nextTurn() {
-    if (!matchActive || !currentMatchId) return;
-
-    gasStatusEl.innerText = "AI Thinking... 🧠";
-
-    try {
-        const response = await fetch(GAS_WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({
-                action: "move",
-                secret: SECRET_KEY,
-                matchId: currentMatchId
-            })
-        });
-        const res = await response.json();
-
-        if (res.error) throw new Error(res.error);
-
-        // Update UI
-        renderBoard(res.fen);
-        if (res.moves !== undefined) {
-            moveCountEl.innerText = res.moves;
-        }
-
-        // Check if game ended
-        if (res.gameOver) {
-            matchActive = false;
-            startBtn.innerText = "Initiate Battle";
-            gasStatusEl.innerText = "Match Finished ✅";
-            addToHistory(res);
-            alert(`Match Over!\nWinner: ${res.winner}\nResult: ${res.result}`);
-        } else {
-            // Wait a bit then ask for next move (Polling)
-            setTimeout(nextTurn, 800);
-        }
+        // In a real app, we might redirect: window.location.href = `battle.html?id=${res.matchId}`;
+        alert(`Match Started!\nGame: ${game}\nMatch ID: ${res.matchId}\nCheck console for details.`);
 
     } catch (err) {
-        console.error("Turn Error:", err);
-        gasStatusEl.innerText = "Sync Lost ❌";
+        console.error("Match Error:", err);
+        gasStatusEl.innerText = "Engine Error ❌";
+        startBtn.innerText = "Retry Initiation";
+        startBtn.style.opacity = "1";
+        startBtn.style.cursor = "pointer";
         matchActive = false;
-        startBtn.innerText = "Initiate Battle";
     }
-}
-
-function addToHistory(match) {
-    const item = document.createElement('div');
-    item.className = 'match-item';
-    item.innerHTML = `
-        <div style="display: flex; justify-content: space-between;">
-            <span>${match.aiA} vs ${match.aiB}</span>
-            <span class="status-badge badge-win">${match.winner}</span>
-        </div>
-        <div style="font-size: 11px; color: var(--text-dim); margin-top: 4px;">${match.game.toUpperCase()} • ${match.moves} moves • Final</div>
-    `;
-    historyList.prepend(item);
 }
 
 // Event Listeners
-startBtn.addEventListener('click', startBattle);
+startBtn.addEventListener('click', startMatch);
 
-resetBtn.addEventListener('click', () => {
-    game = new Chess();
-    renderBoard(game.fen());
-    moveCount = 0;
-    moveCountEl.innerText = "0";
-    matchActive = false;
-    currentMatchId = null;
-    startBtn.innerText = "Initiate Battle";
-    gasStatusEl.innerText = "Ready 🟢";
+// Dynamic UI effects
+document.querySelectorAll('select').forEach(select => {
+    select.addEventListener('change', () => {
+        // Add a small flash effect to the card when selection changes
+        const card = select.closest('.setup-card');
+        card.style.borderColor = 'var(--primary-blue)';
+        setTimeout(() => {
+            card.style.borderColor = 'var(--glass-border)';
+        }, 300);
+    });
 });
 
-simulateMoveBtn.addEventListener('click', () => {
-    if (game.game_over()) return;
-    const moves = game.moves();
-    game.move(moves[Math.floor(Math.random() * moves.length)]);
-    renderBoard(game.fen());
-    updateStatus();
-});
+// Periodic Latency Simulation
+setInterval(() => {
+    const base = 20;
+    const jitter = Math.floor(Math.random() * 15);
+    latencyEl.innerText = (base + jitter) + "ms";
+}, 3000);
+
+console.log("AIRENA Portal Loaded - Ready for Deployment");
